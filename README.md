@@ -10,4 +10,6 @@ Build an end-to-end pipeline for classifying news headlines (Fox vs NBC).
 - Evaluation
 
 ## Team
-- Your names
+- Irene Cui
+- Ruomin Wu
+- Yanru Fang
