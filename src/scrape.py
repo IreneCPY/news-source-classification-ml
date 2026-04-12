@@ -7,6 +7,18 @@ headers = {
     "User-Agent": "Mozilla/5.0"
 }
 
+df = pd.read_csv("data/raw/url_only_data.csv")
+
+fox_df = df[df["url"].str.contains("foxnews.com")]
+nbc_df = df[df["url"].str.contains("nbcnews.com")]
+
+df_sample = pd.concat([
+    fox_df.head(500),
+    nbc_df.head(500)
+])
+
+df_sample = df_sample.sample(frac=1, random_state=42).reset_index(drop=True)
+
 def get_headline(url):
     try:
         res = requests.get(url, timeout=5, headers=headers)
@@ -23,11 +35,9 @@ def get_headline(url):
 
 
 def main():
-    df = pd.read_csv("data/raw/url_only_data.csv")
     results = []
-    # test with first 20 rows
-    df = df.head(100)
-    for _, row in tqdm(df.iterrows(), total=len(df)):
+
+    for _, row in tqdm(df_sample.iterrows(), total=len(df_sample)):
         url = row["url"]
         headline = get_headline(url)
         results.append({
