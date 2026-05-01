@@ -20,29 +20,43 @@ def main():
 
     print(f"Train size: {len(X_train)}, Val size: {len(X_val)}")
 
-    configs = [
-        {"C_svm": 0.15, "C_lr": 0.5},
-        {"C_svm": 0.20, "C_lr": 0.5},
-        {"C_svm": 0.25, "C_lr": 0.5},
-        {"C_svm": 0.20, "C_lr": 1.0},
-        {"C_svm": 0.20, "C_lr": 2.0},
-    ]
-
     best_acc = 0.0
     best_config = None
     best_model = None
+
+    configs = [
+        # Fine-tune around best C=0.25
+        {"C": 0.05, "word_ngram_range": (1, 2), "char_ngram_range": (3, 5)},
+        {"C": 0.10, "word_ngram_range": (1, 2), "char_ngram_range": (3, 5)},
+        {"C": 0.15, "word_ngram_range": (1, 2), "char_ngram_range": (3, 5)},
+        {"C": 0.20, "word_ngram_range": (1, 2), "char_ngram_range": (3, 5)},
+        {"C": 0.25, "word_ngram_range": (1, 2), "char_ngram_range": (3, 5)},
+        {"C": 0.30, "word_ngram_range": (1, 2), "char_ngram_range": (3, 5)},
+        {"C": 0.35, "word_ngram_range": (1, 2), "char_ngram_range": (3, 5)},
+
+        # Try no char features changed slightly
+        {"C": 0.20, "word_ngram_range": (1, 2), "char_ngram_range": (2, 5)},
+        {"C": 0.25, "word_ngram_range": (1, 2), "char_ngram_range": (2, 5)},
+        {"C": 0.30, "word_ngram_range": (1, 2), "char_ngram_range": (2, 5)},
+
+        # Try shorter char range
+        {"C": 0.20, "word_ngram_range": (1, 2), "char_ngram_range": (3, 4)},
+        {"C": 0.25, "word_ngram_range": (1, 2), "char_ngram_range": (3, 4)},
+        {"C": 0.30, "word_ngram_range": (1, 2), "char_ngram_range": (3, 4)},
+
+        # Try word unigrams only, sometimes less overfit
+        {"C": 0.20, "word_ngram_range": (1, 1), "char_ngram_range": (3, 5)},
+        {"C": 0.25, "word_ngram_range": (1, 1), "char_ngram_range": (3, 5)},
+        {"C": 0.30, "word_ngram_range": (1, 1), "char_ngram_range": (3, 5)},
+    ]
 
     for config in configs:
         print("\nTesting config:", config)
 
         model = NewsClassifier(
-            C_svm=config["C_svm"],
-            C_lr=config["C_lr"],
-            word_ngram_range=(1, 2),
-            char_ngram_range=(2, 5),
-            word_min_df=2,
-            char_min_df=2,
-            max_df=0.98,
+            C=config["C"],
+            word_ngram_range=config["word_ngram_range"],
+            char_ngram_range=config["char_ngram_range"],
             weights_path="__no_existing_model__.pt"
         )
 
